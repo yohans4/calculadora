@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora</title>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        #calculator {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+        }
+
+        #display {
+            font-size: 2em;
+            padding: 10px;
+            text-align: right;
+            border-bottom: 1px solid #ccc;
+        }
+
+        #buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        button {
+            font-size: 1.5em;
+            padding: 15px;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button.operator {
+            background-color: #ff9500;
+            color: #fff;
+        }
+
+        button.double {
+            grid-column: span 2;
+        }
+
+        button.equal {
+            background-color: #28a745;
+            color: #fff;
+        }
+
+        button.clear {
+            background-color: #dc3545;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div id="calculator">
+        <div id="display"></div>
+        <div id="buttons">
+            <button>7</button>
+            <button>8</button>
+            <button>9</button>
+            <button class="operator">/</button>
+            <button>4</button>
+            <button>5</button>
+            <button>6</button>
+            <button class="operator">*</button>
+            <button>1</button>
+            <button>2</button>
+            <button>3</button>
+            <button class="operator">-</button>
+            <button class="double">0</button>
+            <button>.</button>
+            <button class="equal operator">=</button>
+            <button class="operator">+</button>
+            <button class="clear double">C</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const display = document.getElementById("display");
+            const buttons = document.getElementById("buttons");
+
+            let currentInput = "";
+            let currentOperator = "";
+            let waitingForNextInput = false;
+
+            buttons.addEventListener("click", function (event) {
+                const target = event.target;
+
+                if (target.tagName === "BUTTON") {
+                    const buttonText = target.textContent;
+
+                    if (/\d/.test(buttonText)) {
+                        if (waitingForNextInput) {
+                            currentInput = buttonText;
+                            waitingForNextInput = false;
+                        } else {
+                            currentInput += buttonText;
+                        }
+                    } else if (/\+|-|\*|\//.test(buttonText)) {
+                        if (currentOperator) {
+                            calculate();
+                        }
+                        currentOperator = buttonText;
+                        currentInput += ` ${currentOperator} `;
+                        waitingForNextInput = false;
+                    } else if (buttonText === "=") {
+                        calculate();
+                        waitingForNextInput = true;
+                    } else if (buttonText === "C") {
+                        clear();
+                    }
+
+                    updateDisplay();
+                }
+            });
+
+            function updateDisplay() {
+                display.textContent = currentInput;
+            }
+
+            function calculate() {
+                const expression = currentInput.replace(/\s/g, "");
+                currentInput = eval(expression).toString();
+                currentOperator = "";
+            }
+
+            function clear() {
+                currentInput = "";
+                currentOperator = "";
+                waitingForNextInput = false;
+                updateDisplay();
+            }
+        });
+    </script>
+</body>
+</html>
+
